@@ -23,3 +23,21 @@ begin
 end;
 $function$;
 
+-- Add RLS policy to allow trigger to insert profiles
+-- This policy allows service_role (used by SECURITY DEFINER functions) to insert profiles
+-- Drop existing policy if it exists, then create new one
+DROP POLICY IF EXISTS "Allow trigger to insert profiles" ON public.profiles;
+CREATE POLICY "Allow trigger to insert profiles"
+ON public.profiles
+FOR INSERT
+TO service_role
+WITH CHECK (true);
+
+-- Also allow postgres role (function owner) to insert
+DROP POLICY IF EXISTS "Allow postgres to insert profiles" ON public.profiles;
+CREATE POLICY "Allow postgres to insert profiles"
+ON public.profiles
+FOR INSERT
+TO postgres
+WITH CHECK (true);
+
